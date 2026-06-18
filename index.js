@@ -33,14 +33,32 @@ async function run() {
             const result = await donationrequests.find().toArray();
             res.send(result);
         });
+        app.get('/donationrequests/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {
+                _id: id,
+            };
+            const result = await donationrequests.findOne(query);
+            res.send(result);
+        });
         app.get('/bddistricts', async (req, res) => {
             const result = await bddistricts.find().toArray();
+            res.send(result);
+        });
+        app.get('/bddistricts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {
+                name: id,
+            };
+            const result = await bddistricts.findOne(query);
+
             res.send(result);
         });
         app.get('/bdupazilas', async (req, res) => {
             const result = await bdupazilas.find().toArray();
             res.send(result);
         });
+
 
     } finally {
         // await client.close()
