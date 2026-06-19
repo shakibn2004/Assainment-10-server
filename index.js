@@ -26,21 +26,11 @@ async function run() {
     try {
         const db = client.db("assainment-10-server");
         const donationrequests = db.collection('donationrequests');
+        const funding = db.collection('funding');
         const bddistricts = db.collection('bddistricts')
         const bdupazilas = db.collection('bdupazilas')
 
-        app.get('/donationrequests', async (req, res) => {
-            const result = await donationrequests.find().toArray();
-            res.send(result);
-        });
-        app.get('/donationrequests/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = {
-                _id: id,
-            };
-            const result = await donationrequests.findOne(query);
-            res.send(result);
-        });
+        // Districts and upazilas api
         app.get('/bddistricts', async (req, res) => {
             const result = await bddistricts.find().toArray();
             res.send(result);
@@ -56,6 +46,34 @@ async function run() {
         });
         app.get('/bdupazilas', async (req, res) => {
             const result = await bdupazilas.find().toArray();
+            res.send(result);
+        });
+
+        // main api
+        app.get('/donationrequests', async (req, res) => {
+            const result = await donationrequests.find().toArray();
+            res.send(result);
+        });
+        app.get('/funding', async (req, res) => {
+            const { page = 1, limit = 10 } = req.query;
+            const skip = (Number(page) - 1) * Number(limit);
+            const totalData = await funding.countDocuments();
+            const totalPage = Math.ceil(totalData / Number(limit));
+
+            const result = await funding.find().sort({_id: -1}).skip(skip).limit(Number(limit)).toArray();
+            res.send({ data: result, page: Number(page), totalPage, totalData, limit });
+        });
+        app.get('/donationrequests/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {
+                _id: id,
+            };
+            const result = await donationrequests.findOne(query);
+            res.send(result);
+        });
+
+        app.post('/funding',  async (req, res) => {
+            const result = await funding.insertOne(req.body);
             res.send(result);
         });
 
