@@ -29,6 +29,7 @@ async function run() {
         const funding = db.collection('funding');
         const bddistricts = db.collection('bddistricts')
         const bdupazilas = db.collection('bdupazilas')
+        const allusers = db.collection('allusers')
 
         // Districts and upazilas api
         app.get('/bddistricts', async (req, res) => {
@@ -48,6 +49,18 @@ async function run() {
             const result = await bdupazilas.find().toArray();
             res.send(result);
         });
+        app.get('/bdupazilas/:id', async (req, res) => {
+            const id = req.params.id;
+
+            const query = {
+                district_id: id
+            };
+
+            const result = await bdupazilas.find(query).toArray();
+
+            res.send(result);
+        });
+
 
         // main api
         app.get('/donationrequests', async (req, res) => {
@@ -60,7 +73,7 @@ async function run() {
             const totalData = await funding.countDocuments();
             const totalPage = Math.ceil(totalData / Number(limit));
 
-            const result = await funding.find().sort({_id: -1}).skip(skip).limit(Number(limit)).toArray();
+            const result = await funding.find().sort({ _id: -1 }).skip(skip).limit(Number(limit)).toArray();
             res.send({ data: result, page: Number(page), totalPage, totalData, limit });
         });
         app.get('/donationrequests/:id', async (req, res) => {
@@ -72,11 +85,15 @@ async function run() {
             res.send(result);
         });
 
-        app.post('/funding',  async (req, res) => {
+        app.post('/funding', async (req, res) => {
             const result = await funding.insertOne(req.body);
             res.send(result);
         });
 
+        app.post('/allusers', async (req, res) => {
+            const result = await allusers.insertOne(req.body);
+            res.send(result);
+        })
 
     } finally {
         // await client.close()
