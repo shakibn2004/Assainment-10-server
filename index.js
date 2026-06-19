@@ -67,6 +67,18 @@ async function run() {
             const result = await donationrequests.find().toArray();
             res.send(result);
         });
+        app.get('/allusers', async (req, res) => {
+            const result = await allusers.find().toArray();
+            res.send(result);
+        });
+        app.get('/allusers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {
+                email: email
+            }
+            const result = await allusers.findOne(query);
+            res.send(result);
+        });
         app.get('/funding', async (req, res) => {
             const { page = 1, limit = 10 } = req.query;
             const skip = (Number(page) - 1) * Number(limit);
