@@ -67,10 +67,12 @@ async function run() {
             const result = await donationrequests.find().toArray();
             res.send(result);
         });
+
         app.get('/allusers', async (req, res) => {
             const result = await allusers.find().toArray();
             res.send(result);
         });
+
         app.get('/allusers/:email', async (req, res) => {
             const email = req.params.email;
             const query = {
@@ -79,6 +81,7 @@ async function run() {
             const result = await allusers.findOne(query);
             res.send(result);
         });
+
         app.get('/funding', async (req, res) => {
             const { page = 1, limit = 10 } = req.query;
             const skip = (Number(page) - 1) * Number(limit);
@@ -88,10 +91,11 @@ async function run() {
             const result = await funding.find().sort({ _id: -1 }).skip(skip).limit(Number(limit)).toArray();
             res.send({ data: result, page: Number(page), totalPage, totalData, limit });
         });
+
         app.get('/donationrequests/:id', async (req, res) => {
             const id = req.params.id;
             const query = {
-                _id: id,
+                _id: new ObjectId(id),
             };
             const result = await donationrequests.findOne(query);
             res.send(result);
@@ -106,6 +110,26 @@ async function run() {
             const result = await allusers.insertOne(req.body);
             res.send(result);
         })
+
+        app.post('/donationrequests', async (req, res) => {
+            const result = await donationrequests.insertOne(req.body);
+            res.send(result);
+        })
+
+        // patch methods
+        app.patch('/allusers/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedData = req.body;
+
+            const result = await allusers.updateOne(
+                { _id: new ObjectId(id) },
+                {
+                    $set: updatedData
+                }
+            );
+
+            res.send(result);
+        });
 
     } finally {
         // await client.close()
