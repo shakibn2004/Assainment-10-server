@@ -101,6 +101,15 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/dashboard/my-donation-requests/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {
+                requesterEmail: email,
+            };
+            const result = await donationrequests.find(query).toArray();
+            res.send(result);
+        });
+
         app.post('/funding', async (req, res) => {
             const result = await funding.insertOne(req.body);
             res.send(result);
