@@ -21,6 +21,28 @@ const client = new MongoClient(uri, {
     },
 });
 
+// verify token middlewere
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URI}/api/auth/jwks`));
+
+
+const verifyToken = async (req, res, next) => {
+    const authHeader = req?.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+        const { payload } = await jwtVerify(token, JWKS);
+        next();
+    } catch (error) {
+        console.log('error', error);
+        return res.status(403).json({ message: "Forbidden" });
+    }
+};
+
 // database and collection create and send data
 async function run() {
     try {
