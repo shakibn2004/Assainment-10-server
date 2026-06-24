@@ -52,6 +52,7 @@ async function run() {
         const bddistricts = db.collection('bddistricts')
         const bdupazilas = db.collection('bdupazilas')
         const allusers = db.collection('allusers')
+        const user = db.collection('user')
 
         // Districts and upazilas api
         app.get('/bddistricts', async (req, res) => {
@@ -166,6 +167,20 @@ async function run() {
             const updatedData = req.body;
 
             const result = await allusers.updateOne(
+                { _id: new ObjectId(id) },
+                {
+                    $set: updatedData
+                }
+            );
+
+            res.send(result);
+        });
+
+        app.patch('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedData = req.body;
+
+            const result = await user.updateOne(
                 { _id: new ObjectId(id) },
                 {
                     $set: updatedData
