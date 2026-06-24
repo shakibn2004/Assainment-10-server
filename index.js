@@ -95,6 +95,19 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/search', async (req, res) => {
+            const { district, bloodgroup, upazila } = req.headers
+            const query = {
+                district,
+                bloodGroup: bloodgroup,
+                upazila
+            }
+
+            const result = await allusers.find(query).toArray();
+
+            res.send(result);
+        });
+
         app.get('/allusers/:email', async (req, res) => {
             const email = req.params.email;
             const query = {
